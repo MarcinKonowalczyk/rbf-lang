@@ -14,14 +14,20 @@ int main()
     }
 
     print_tape(t);
+    print_bit_pointer(t);
 
-    int bit_index = 0;
-    for (int i = 0; i < byte_length * 8; i++)
-    {
-        set_by_bit_index(t, bit_index, 1);
-        bit_index++;
-        print_tape(t);
-    }
+    move_pointer(t, -101);
+    print_tape(t);
+    printf("bit_pointer: %ld\n", t->bit_pointer);
+    print_bit_pointer(t);
+
+    // int bit_index = 0;
+    // for (int i = 0; i < byte_length * 8; i++)
+    // {
+    //     set_by_bit_index(t, bit_index, 1);
+    //     bit_index++;
+    //     print_tape(t);
+    // }
 
     free_tape(t);
     return 0;
