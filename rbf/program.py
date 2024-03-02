@@ -1,7 +1,14 @@
-from typing import Sequence, Union
-from typing_extensions import overload
-
+from ._typing import Sequence, Union, overload
 from .command import Command
+from . import RBFError
+
+
+class ProgramMoveError(RBFError):
+    """Raised when the program counter is out of bounds."""
+
+
+class InvalidProgramError(RBFError):
+    """Raised when the program is invalid."""
 
 
 class Program(Sequence[Command]):
@@ -9,13 +16,24 @@ class Program(Sequence[Command]):
 
     def __init__(self, program: Union[str, Sequence[Command]]) -> None:
         program = validate_program(program)
-        self.program = program
-        self.size = len(program)
-        self.pointer = 0
-        self.steps = 0
+        self._program = program
+        self._pointer = 0
+        self._steps = 0
+
+    @property
+    def program(self) -> Sequence[Command]:
+        return self._program
+
+    @property
+    def pointer(self) -> int:
+        return self._pointer
+
+    @property
+    def steps(self) -> int:
+        return self._steps
 
     def __len__(self) -> int:
-        return self.size
+        return len(self._program)
 
     @overload
     def __getitem__(self, index: int) -> Command: ...
@@ -27,14 +45,14 @@ class Program(Sequence[Command]):
         self, index_or_slice: Union[int, slice]
     ) -> Union[Command, Sequence[Command]]:
         if isinstance(index_or_slice, int):
-            return self.program[index_or_slice]
+            return self._program[index_or_slice]
         elif isinstance(index_or_slice, slice):
-            return self.program[index_or_slice]
+            return self._program[index_or_slice]
         else:
             raise TypeError("Index must be an int or a slice.")
 
     def _single_char_repr(self) -> str:
-        return "".join(command.value for command in self.program)
+        return "".join(command.value for command in self._program)
 
     def __repr__(self) -> str:
         return f"Program({self._single_char_repr()!r})"
@@ -42,66 +60,105 @@ class Program(Sequence[Command]):
     def __str__(self) -> str:
         return self._single_char_repr()
 
+    def _move_right_nostep(self) -> None:
+        """Move the program pointer to the right without incrementing the step counter."""
+        if self._pointer < len(self) - 1:
+            self._pointer += 1
+        else:
+            raise ProgramMoveError("Program pointer overflow.")
+
     def move_right(self) -> None:
         """Move the program pointer to the right."""
-        if self.pointer < self.size - 1:
-            self.pointer += 1
+        self._steps += 1
+        self._move_right_nostep()
+
+    def _move_left_nostep(self) -> None:
+        """Move the program pointer to the left without incrementing the step counter."""
+        if self._pointer > 0:
+            self._pointer -= 1
         else:
-            raise ValueError(
-                f"Program pointer out of bounds at {self.pointer} (size: {self.size})."
-            )
+            raise ProgramMoveError("Program pointer underflow.")
 
     def move_left(self) -> None:
         """Move the program pointer to the left."""
-        if self.pointer > 0:
-            self.pointer -= 1
-        else:
-            raise ValueError("Program pointer out of bounds.")
+        self._steps += 1
+        self._move_left_nostep()
 
     def loop_start(self, current_bit: bool) -> None:
         """If the current bit is zero, jump past matching ). Else, continue (loop)."""
-        if current_bit:
-            # The current bit is not zero, so we noop.
-            pass
-        else:
-            # The current bit is zero, so we jump past the matching ).
-            bracket_depth = 1
-            while bracket_depth > 0:
-                self.move_right()
-                if self.program[self.pointer] == Command.LOOP_START:
-                    bracket_depth += 1
-                elif self.program[self.pointer] == Command.LOOP_END:
-                    bracket_depth -= 1
+        if self.command != Command.LOOP_START:
+            raise ValueError("Not at a loop start.")
 
-                if self.pointer == self.size - 1:
-                    raise ValueError("Unmatched loop start.")
+        # NOTE: we want to increment even if we end up raising an error.
+        self._steps += 1
+
+        if not current_bit:
+            try:
+                # The current bit is zero, so we jump past the matching ).
+                bracket_depth = 1
+                while bracket_depth > 0:
+                    self._move_right_nostep()
+                    if self.command == Command.LOOP_START:
+                        bracket_depth += 1
+                    elif self.command == Command.LOOP_END:
+                        bracket_depth -= 1
+
+            except ProgramMoveError:
+                # We've hit the end of the program without finding the matching ).
+                raise InvalidProgramError("Unmatched loop start.")
+
+            # We are now at the matching ), but we need to move past it, so move right once more.
+            try:
+                self._move_right_nostep()
+            except ProgramMoveError:
+                # We cannot move past the matching ) because we are at the end of the program.
+                # Just let the program end by re-raising the ProgramMoveError.
+                raise
 
     def loop_end(self, current_bit: bool) -> None:
         """If the current bit is zero, jump back to just after matching (. Else, continue."""
-        if current_bit:
-            # The current bit is not zero, so we noop.
-            pass
-        else:
-            # The current bit is zero, so we jump back to just after the matching (.
-            bracket_depth = 1
-            while bracket_depth > 0:
-                self.move_left()
-                if self.program[self.pointer] == Command.LOOP_START:
-                    bracket_depth -= 1
-                elif self.program[self.pointer] == Command.LOOP_END:
-                    bracket_depth += 1
+        if self.command != Command.LOOP_END:
+            raise ValueError("Not at a loop end.")
 
-                if self.pointer == 0:
-                    raise ValueError("Unmatched loop end.")
+        self._steps += 1
+
+        if not current_bit:
+            try:
+                # The current bit is zero, so we jump back to just after the matching (.
+                bracket_depth = 1
+                while bracket_depth > 0:
+                    self._move_left_nostep()
+                    if self._program[self._pointer] == Command.LOOP_START:
+                        bracket_depth -= 1
+                    elif self._program[self._pointer] == Command.LOOP_END:
+                        bracket_depth += 1
+
+            except ProgramMoveError:
+                raise InvalidProgramError("Unmatched loop end.")
+
+            # We are now at the matching (, but we need to move just after it, so move right once.
+            # NOTE: We don't need to worry about hitting the end of the program here.
+            self._move_right_nostep()
 
     def reset(self) -> None:
         """Reset the program."""
-        self.pointer = 0
-        self.steps = 0
+        self._pointer = 0
+        self._steps = 0
 
     @property
-    def current_command(self) -> Command:
-        return self.program[self.pointer]
+    def command(self) -> Command:
+        return self._program[self._pointer]
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Program):
+            return self._program == other.program
+        elif isinstance(other, str):
+            return str(self) == other
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        return hash(str(self))
 
 
 def validate_program(program: Union[str, Sequence[Command]]) -> Sequence[Command]:
@@ -123,9 +180,9 @@ def validate_program(program: Union[str, Sequence[Command]]) -> Sequence[Command
             bracket_depth -= 1
 
         if bracket_depth < 0:
-            raise ValueError("Unmatched loop end.")
+            raise InvalidProgramError("Unmatched loop end.")
 
     if bracket_depth != 0:
-        raise ValueError("Unmatched loop start.")
+        raise InvalidProgramError("Unmatched loop start.")
 
     return parsed_commands

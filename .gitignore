@@ -57,3 +57,10 @@ build/
 # vscode
 .vscode/
 __pycache__/
+
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+test-output.xml
+.coverage

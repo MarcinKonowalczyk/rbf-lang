@@ -1,5 +1,4 @@
-from typing import Union, Callable, Optional
-
+from ._typing import Callable, Optional, Union
 from .command import Command
 from .program import Program
 from .tape import Tape
@@ -24,26 +23,26 @@ def run(
         if callback and callback(program, tape):
             break
 
-        current_command = program.current_command
-        current_bit = tape.current_bit
+        command = program.command
+        bit = tape.bit
 
-        if current_command == Command.TOGGLE:
+        if command == Command.TOGGLE:
             tape.toggle()
-        elif current_command == Command.TAPE_RIGHT:
+        elif command == Command.TAPE_RIGHT:
             tape.move_right()
-        elif current_command == Command.TAPE_LEFT:
+        elif command == Command.TAPE_LEFT:
             tape.move_left()
-        elif current_command == Command.LOOP_START:
-            program.loop_start(current_bit)
-        elif current_command == Command.LOOP_END:
-            program.loop_end(current_bit)
+        elif command == Command.LOOP_START:
+            program.loop_start(bit)
+        elif command == Command.LOOP_END:
+            program.loop_end(bit)
         else:
-            raise ValueError(f"Unknown command: {current_command}")
+            raise ValueError(f"Unknown command: {command}")
 
-        if program.pointer == program.size - 1:
+        if program.pointer == len(program) - 1:
+            # We've reached the end of the program
             break
 
         program.move_right()
-        program.steps += 1
 
     return program, tape
