@@ -67,10 +67,11 @@ class Program(Sequence[Command]):
         else:
             raise ProgramMoveError("Program pointer overflow.")
 
-    def move_right(self) -> None:
+    def move_right(self, N: int = 1) -> None:
         """Move the program pointer to the right."""
-        self._steps += 1
-        self._move_right_nostep()
+        for _ in range(N):
+            self._steps += 1
+            self._move_right_nostep()
 
     def _move_left_nostep(self) -> None:
         """Move the program pointer to the left without incrementing the step counter."""
@@ -79,10 +80,11 @@ class Program(Sequence[Command]):
         else:
             raise ProgramMoveError("Program pointer underflow.")
 
-    def move_left(self) -> None:
+    def move_left(self, N: int = 1) -> None:
         """Move the program pointer to the left."""
-        self._steps += 1
-        self._move_left_nostep()
+        for _ in range(N):
+            self._steps += 1
+            self._move_left_nostep()
 
     def loop_start(self, current_bit: bool) -> None:
         """If the current bit is zero, jump past matching ). Else, continue (loop)."""

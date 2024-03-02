@@ -1,6 +1,6 @@
 import pytest
 import rbf.program
-from rbf.program import Program, ProgramMoveError
+from rbf.program import Program, ProgramMoveError, InvalidProgramError
 
 from rbf.command import Command
 
@@ -19,6 +19,14 @@ def test_hashable():
     hash_2 = hash(program)
 
     assert hash_1 == hash_2
+
+
+def test_equality():
+    source = "*>" * 8
+    program_1 = Program(source)
+    program_2 = Program(source)
+
+    assert program_1 == program_2
 
 
 def test_move():
@@ -60,10 +68,7 @@ def test_reset():
     source = "*>" * 8
     program = Program(source)
 
-    program.move_right()
-    program.move_right()
-    program.move_right()
-    program.move_right()
+    program.move_right(4)
 
     assert program.pointer == 4
     assert program.steps == 4
@@ -129,11 +134,30 @@ def test_loop_start_overflow():
     assert program.steps == 1
 
 
+def test_loop_start_only_on_bracket():
+    source = "(*)"
+    program = Program(source)
+    program.move_right()
+
+    # We're not on a loop start bracket
+    with pytest.raises(ValueError):
+        program.loop_start(False)
+
+
+def test_loop_start_nested_brackets():
+    source = "(*(*))*"
+    program = Program(source)
+
+    # Current bit is 0, so we should jump *past* the matching )
+    program.loop_start(False)
+    assert program.pointer == 6
+    assert program.steps == 1
+
+
 def test_loop_end():
     source = "(*)*"
     program = Program(source)
-    program.move_right()
-    program.move_right()
+    program.move_right(2)
 
     # Current bit is 0, so we should jump back to just after the matching (
     program.loop_end(False)
@@ -141,8 +165,7 @@ def test_loop_end():
     assert program.steps == 3
 
     program.reset()
-    program.move_right()
-    program.move_right()
+    program.move_right(2)
 
     # Current bit is 1, so we should noop (but still increment steps)
     program.loop_end(True)
@@ -153,8 +176,7 @@ def test_loop_end():
 def test_loop_end_overflow():
     source = "(*)"
     program = Program(source)
-    program.move_right()
-    program.move_right()
+    program.move_right(2)
 
     # Current bit is 0, so we should jump back to just after the matching (
     program.loop_end(False)
@@ -162,10 +184,34 @@ def test_loop_end_overflow():
     assert program.steps == 3
 
     program.reset()
-    program.move_right()
-    program.move_right()
+    program.move_right(2)
 
     # Current bit is 1, so we should noop (but still increment steps)
     program.loop_end(True)
     assert program.pointer == 2
     assert program.steps == 3
+
+
+def test_loop_end_only_on_bracket():
+    source = "(*)"
+    program = Program(source)
+
+    # We're not on a loop end bracket
+    with pytest.raises(ValueError):
+        program.loop_end(False)
+
+
+def test_loop_end_nested_brackets():
+    source = "(*(*))*"
+    program = Program(source)
+    program.move_right(5)
+
+    program.loop_end(False)
+    assert program.pointer == 1
+    assert program.steps == 6
+
+
+def test_invalid_program():
+    source = "*)"
+    with pytest.raises(InvalidProgramError):
+        Program(source)
