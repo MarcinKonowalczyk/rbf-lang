@@ -1,4 +1,6 @@
-from ._typing import Sequence, Union, overload
+import warnings
+
+from ._typing import Sequence, Union, overload, Optional
 from .command import Command
 from . import RBFError
 
@@ -11,14 +13,38 @@ class InvalidProgramError(RBFError):
     """Raised when the program is invalid."""
 
 
+_ProgramInitType = Union[str, Sequence[Command], "Program"]
+
+
 class Program(Sequence[Command]):
     """RBF program."""
 
-    def __init__(self, program: Union[str, Sequence[Command]]) -> None:
-        program = validate_program(program)
-        self._program = program
-        self._pointer = 0
-        self._steps = 0
+    _program: Sequence[Command]
+    _pointer: int
+    _steps: int
+
+    def __init__(
+        self,
+        program: _ProgramInitType,
+        pointer: Optional[int] = None,
+    ) -> None:
+        if isinstance(program, Program):
+            self._program = program.program
+            self._pointer = program.pointer
+            self._steps = program.steps
+            if pointer is not None:
+                warnings.warn(
+                    "Pointer argument is ignored when initializing Program with another Program. Set it to None to disable this warning.",
+                    stacklevel=2,
+                )
+        elif isinstance(program, str) or isinstance(program, Sequence):
+            validated_program = validate_program(program)
+            self._program = validated_program
+            pointer = 0 if pointer is None else pointer
+            self._pointer = pointer
+            self._steps = 0
+        else:
+            raise TypeError("Program must be initialized with a string or a sequence.")
 
     @property
     def program(self) -> Sequence[Command]:
@@ -42,7 +68,8 @@ class Program(Sequence[Command]):
     def __getitem__(self, index: slice) -> Sequence[Command]: ...
 
     def __getitem__(
-        self, index_or_slice: Union[int, slice]
+        self,
+        index_or_slice: Union[int, slice],
     ) -> Union[Command, Sequence[Command]]:
         if isinstance(index_or_slice, int):
             return self._program[index_or_slice]
@@ -109,13 +136,13 @@ class Program(Sequence[Command]):
                 # We've hit the end of the program without finding the matching ).
                 raise InvalidProgramError("Unmatched loop start.")
 
-            # We are now at the matching ), but we need to move past it, so move right once more.
-            try:
-                self._move_right_nostep()
-            except ProgramMoveError:
-                # We cannot move past the matching ) because we are at the end of the program.
-                # Just let the program end by re-raising the ProgramMoveError.
-                raise
+        # We are now at the matching ), but we need to move past it, so move right once more.
+        try:
+            self._move_right_nostep()
+        except ProgramMoveError:
+            # We cannot move past the matching ) because we are at the end of the program.
+            # Just let the program end by re-raising the ProgramMoveError.
+            raise
 
     def loop_end(self, current_bit: bool) -> None:
         """If the current bit is zero, jump back to just after matching (. Else, continue."""
@@ -138,9 +165,9 @@ class Program(Sequence[Command]):
             except ProgramMoveError:
                 raise InvalidProgramError("Unmatched loop end.")
 
-            # We are now at the matching (, but we need to move just after it, so move right once.
-            # NOTE: We don't need to worry about hitting the end of the program here.
-            self._move_right_nostep()
+        # We are now at the matching (, but we need to move just after it, so move right once.
+        # NOTE: We don't need to worry about hitting the end of the program here.
+        self._move_right_nostep()
 
     def reset(self) -> None:
         """Reset the program."""
@@ -161,6 +188,10 @@ class Program(Sequence[Command]):
 
     def __hash__(self) -> int:
         return hash(str(self))
+
+    def copy(self) -> "Program":
+        """Return a copy of the program."""
+        return Program(self)
 
 
 def validate_program(program: Union[str, Sequence[Command]]) -> Sequence[Command]:

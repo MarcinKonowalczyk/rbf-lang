@@ -1,5 +1,4 @@
 import pytest
-import rbf.program
 from rbf.program import Program, ProgramMoveError, InvalidProgramError
 
 from rbf.command import Command
@@ -112,7 +111,7 @@ def test_loop_start():
 
     # Current bit is 1, so we should noop (but still increment steps)
     program.loop_start(True)
-    assert program.pointer == 0
+    assert program.pointer == 1
     assert program.steps == 1
 
 
@@ -130,7 +129,7 @@ def test_loop_start_overflow():
 
     # Current bit is 1, so we should noop (but still increment steps)
     program.loop_start(True)
-    assert program.pointer == 0
+    assert program.pointer == 1
     assert program.steps == 1
 
 
@@ -169,12 +168,12 @@ def test_loop_end():
 
     # Current bit is 1, so we should noop (but still increment steps)
     program.loop_end(True)
-    assert program.pointer == 2
+    assert program.pointer == 3
     assert program.steps == 3
 
 
 def test_loop_end_overflow():
-    source = "(*)"
+    source = "(*)>"
     program = Program(source)
     program.move_right(2)
 
@@ -188,7 +187,7 @@ def test_loop_end_overflow():
 
     # Current bit is 1, so we should noop (but still increment steps)
     program.loop_end(True)
-    assert program.pointer == 2
+    assert program.pointer == 3
     assert program.steps == 3
 
 
@@ -215,3 +214,12 @@ def test_invalid_program():
     source = "*)"
     with pytest.raises(InvalidProgramError):
         Program(source)
+
+
+def test_copy():
+    source = "*>" * 8
+    program = Program(source)
+    program_2 = program.copy()
+
+    assert program == program_2
+    assert program is not program_2
