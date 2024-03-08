@@ -2,7 +2,7 @@ name: test-commit
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build:
