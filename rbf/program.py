@@ -1,11 +1,11 @@
 import warnings
 
-from ._typing import Sequence, Union, overload, Optional
+from typing import Sequence, Union, overload, Optional
 from .command import Command
 from . import RBFError
 
 
-class ProgramMoveError(RBFError):
+class ProgramPointerError(RBFError):
     """Raised when the program counter is out of bounds."""
 
 
@@ -38,6 +38,8 @@ class Program(Sequence[Command]):
                     stacklevel=2,
                 )
         elif isinstance(program, str) or isinstance(program, Sequence):
+            if isinstance(program, str):
+                program = preprocess_program(program)
             validated_program = validate_program(program)
             self._program = validated_program
             pointer = 0 if pointer is None else pointer
@@ -92,7 +94,7 @@ class Program(Sequence[Command]):
         if self._pointer < len(self) - 1:
             self._pointer += 1
         else:
-            raise ProgramMoveError("Program pointer overflow.")
+            raise ProgramPointerError("Program pointer overflow.")
 
     def move_right(self, N: int = 1) -> None:
         """Move the program pointer to the right."""
@@ -105,7 +107,7 @@ class Program(Sequence[Command]):
         if self._pointer > 0:
             self._pointer -= 1
         else:
-            raise ProgramMoveError("Program pointer underflow.")
+            raise ProgramPointerError("Program pointer underflow.")
 
     def move_left(self, N: int = 1) -> None:
         """Move the program pointer to the left."""
@@ -132,16 +134,16 @@ class Program(Sequence[Command]):
                     elif self.command == Command.LOOP_END:
                         bracket_depth -= 1
 
-            except ProgramMoveError:
+            except ProgramPointerError:
                 # We've hit the end of the program without finding the matching ).
                 raise InvalidProgramError("Unmatched loop start.")
 
         # We are now at the matching ), but we need to move past it, so move right once more.
         try:
             self._move_right_nostep()
-        except ProgramMoveError:
+        except ProgramPointerError:
             # We cannot move past the matching ) because we are at the end of the program.
-            # Just let the program end by re-raising the ProgramMoveError.
+            # Just let the program end by re-raising the ProgramPointerError.
             raise
 
     def loop_end(self, current_bit: bool) -> None:
@@ -162,7 +164,7 @@ class Program(Sequence[Command]):
                     elif self._program[self._pointer] == Command.LOOP_END:
                         bracket_depth += 1
 
-            except ProgramMoveError:
+            except ProgramPointerError:
                 raise InvalidProgramError("Unmatched loop end.")
 
         # We are now at the matching (, but we need to move just after it, so move right once.
@@ -176,6 +178,8 @@ class Program(Sequence[Command]):
 
     @property
     def command(self) -> Command:
+        if len(self) == 0:
+            raise ProgramPointerError("Program is empty.")
         return self._program[self._pointer]
 
     def __eq__(self, other: object) -> bool:
@@ -194,11 +198,28 @@ class Program(Sequence[Command]):
         return Program(self)
 
 
+def preprocess_program(program: str) -> str:
+    """Preprocess the RBF program."""
+
+    if isinstance(program, str):
+        # Split into lines
+        lines = program.split("\n")
+        # For each line, remove any characters after a # (comments)
+        lines = [line.split("#", 1)[0] for line in lines]
+        # Join the lines back together
+        program = "".join(lines)
+        # Remove spaces
+        program = program.replace(" ", "")
+
+    return program
+
+
 def validate_program(program: Union[str, Sequence[Command]]) -> Sequence[Command]:
     """Validate the RBF program."""
 
     parsed_commands: Sequence[Command]
     if isinstance(program, str):
+        # Remove any characters that are not RBF commands.
         # Convert the string to a list of Commands.
         parsed_commands = [Command(command) for command in program]
     else:

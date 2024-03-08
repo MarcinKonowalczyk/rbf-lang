@@ -1,3 +1,15 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "rbf"
+authors = [{ name = "Marcin Konowalczyk", email = "marcin.konow@lczyk.xyz" }]
+dynamic = ["version", "description"]
+
+[project.urls]
+Home = "https://github.com/marcinkonowalczyk/rbf"
+
 # coverage setup
 [tool.coverage.run]
 omit = ["tests/*", "**/__init__.py"]
@@ -15,10 +27,6 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "except ImportError:",
 ]
-
-
-[tool.ruff]
-lint.typing-modules = ["rbf._typing"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

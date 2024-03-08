@@ -1,5 +1,5 @@
 import warnings
-from ._typing import Sequence, Union, overload, Optional
+from typing import Sequence, Union, overload, Optional
 
 _TAPE_SIZE = 8
 

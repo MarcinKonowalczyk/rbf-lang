@@ -1,6 +1,8 @@
-from beartype.claw import beartype_this_package
+"""
+Reversible BitFuck (RBF) interpretor
+"""
 
-beartype_this_package()
+__version__ = "0.1.0"
 
 
 class RBFError(Exception):

@@ -66,3 +66,4 @@ test-output.xml
 .coverage
 htmlcov
 .python-version
+dist

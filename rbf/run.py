@@ -1,6 +1,6 @@
-from ._typing import Callable, Optional
+from typing import Callable, Optional
 from .command import Command
-from .program import Program, ProgramMoveError, _ProgramInitType
+from .program import Program, ProgramPointerError, _ProgramInitType
 from .tape import Tape, _TapeInitType
 
 
@@ -39,7 +39,7 @@ def run(
             else:
                 raise ValueError(f"Unknown command: {command}")
 
-    except ProgramMoveError:
+    except ProgramPointerError:
         # We've moved off the end of the program. This is fine.
         pass
 

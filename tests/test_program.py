@@ -1,5 +1,5 @@
 import pytest
-from rbf.program import Program, ProgramMoveError, InvalidProgramError
+from rbf.program import Program, ProgramPointerError, InvalidProgramError
 
 from rbf.command import Command
 
@@ -43,7 +43,7 @@ def test_move():
 
     # We now should be at the end of the program
     assert program.pointer == 15
-    with pytest.raises(ProgramMoveError):
+    with pytest.raises(ProgramPointerError):
         program.move_right()
 
     assert program.pointer == 15
@@ -57,7 +57,7 @@ def test_move():
     assert program.pointer == 0
     assert program.steps == 31
 
-    with pytest.raises(ProgramMoveError):
+    with pytest.raises(ProgramPointerError):
         program.move_left()
 
     assert program.steps == 32
@@ -120,7 +120,7 @@ def test_loop_start_overflow():
     program = Program(source)
 
     # Current bit is 0, so we should jump *past* the matching )
-    with pytest.raises(ProgramMoveError):
+    with pytest.raises(ProgramPointerError):
         program.loop_start(False)
     assert program.pointer == 2
     assert program.steps == 1
