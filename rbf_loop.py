@@ -1,4 +1,4 @@
-from rbf.run import run, Program, Tape
+from rbf.runner import run, Program, Tape
 import logging
 
 logging.basicConfig(level=logging.INFO)

@@ -2,16 +2,7 @@ import warnings
 
 from typing import Sequence, Union, overload, Optional
 from .command import Command
-from . import RBFError
-
-
-class ProgramPointerError(RBFError):
-    """Raised when the program counter is out of bounds."""
-
-
-class InvalidProgramError(RBFError):
-    """Raised when the program is invalid."""
-
+from .exceptions import InvalidProgramError, ProgramPointerError
 
 _ProgramInitType = Union[str, Sequence[Command], "Program"]
 

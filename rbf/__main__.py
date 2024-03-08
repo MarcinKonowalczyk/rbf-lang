@@ -1,4 +1,4 @@
-from .run import run
+from .runner import run
 
 
 def main(): ...

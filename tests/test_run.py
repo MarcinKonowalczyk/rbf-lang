@@ -1,4 +1,4 @@
-from rbf.run import run
+from rbf.runner import run
 
 
 def test_run_toggle() -> None:
@@ -55,7 +55,6 @@ def test_run_max_steps() -> None:
 
 
 def test_run_loop_behavior() -> None:
-
     source = "()"
     program, tape = run(source, 8, max_steps=10)
 
