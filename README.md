@@ -1,6 +1,8 @@
 # rbf-lang
 
-[Reversible BitFuck](https://esolangs.org/wiki/Reversible_Bitfuck) (RBF) is a [reversible Turing tarpit](https://cstheory.stackexchange.com/questions/22128/reversible-turing-tarpits) programming language. It is based on a tape of bits and has 5 commands:
+[![publish](https://github.com/MarcinKonowalczyk/rbf-lang/actions/workflows/publish.yml/badge.svg)](https://github.com/MarcinKonowalczyk/rbf-lang/actions/workflows/publish.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+[Reversible BitFuck](https://esolangs.org/wiki/Reversible_Bitfuck) (RBF) is a [reversible Turing tarpit](https://cstheory.stackexchange.com/questions/22128/reversible-turing-tarpits). It is based on a tape of bits and has 5 commands:
 
  - `*` Toggle the current bit
  - `>` Shift the tape head right
@@ -23,7 +25,7 @@ Here is an example program operating on 3 bits. Bit 0 is the source bit (`x`), b
 we can run the above program on an example tape (`100`) with rbf cli:
 
 ```sh
-rbf -t "100" "(>>*<<)>>(<(>*<)*<*(>>*<<)>>)<(>*<)"  # outputs 010
+rbf -t 100 "(>>*<<)>>(<(>*<)*<*(>>*<<)>>)<(>*<)"  # outputs 010
 ```
 
 ## installation
@@ -42,6 +44,8 @@ pip install rbf-lang
 
 
 ## links
+
+_(as of yet uncategorised links to related topics. Will be sorted and expanded in the future)_
 
 - https://en.wikipedia.org/wiki/Toffoli_gate
 - https://arxiv.org/abs/1110.2574
