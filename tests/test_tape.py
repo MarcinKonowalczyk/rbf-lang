@@ -1,5 +1,5 @@
 import pytest
-from rbf.tape import Tape
+from rbf_lang.tape import Tape
 
 
 @pytest.fixture

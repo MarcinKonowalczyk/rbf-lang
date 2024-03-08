@@ -2,7 +2,7 @@
 Reversible BitFuck (RBF) interpretor
 """
 
-__version__ = "0.1.0.dev1"
+__version__ = "0.1.0"
 
 from . import program
 from . import tape

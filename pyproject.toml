@@ -8,10 +8,10 @@ authors = [{ name = "Marcin Konowalczyk", email = "marcin.konow@lczyk.xyz" }]
 dynamic = ["version", "description"]
 
 [project.urls]
-home = "https://github.com/marcinkonowalczyk/rbf"
+home = "https://github.com/marcinkonowalczyk/rbf-lang"
 
 [project.scripts]
-rbf = "rbf:cli.main"
+rbf = "rbf_lang:cli.main"
 
 # coverage setup
 [tool.coverage.run]

@@ -1,4 +1,4 @@
-from rbf.runner import run
+from rbf_lang.runner import run
 
 
 def test_move_bit() -> None:
