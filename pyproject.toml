@@ -6,6 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "rbf-lang"
 authors = [{ name = "Marcin Konowalczyk", email = "marcin.konow@lczyk.xyz" }]
 dynamic = ["version", "description"]
+readme = "README.md"
 
 [project.urls]
 home = "https://github.com/marcinkonowalczyk/rbf-lang"
