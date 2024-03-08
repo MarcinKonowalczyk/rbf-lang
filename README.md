@@ -1,4 +1,4 @@
-# rbfnet
+# rbf-lang
 
 - https://esolangs.org/wiki/Reversible_Bitfuck
 - https://en.wikipedia.org/wiki/Toffoli_gate
