@@ -1,7 +1,7 @@
 import pytest
-from rbf.program import Program, ProgramPointerError, InvalidProgramError
+from rbf_lang.program import Program, ProgramPointerError, InvalidProgramError
 
-from rbf.command import Command
+from rbf_lang.command import Command
 
 
 def test_run():
