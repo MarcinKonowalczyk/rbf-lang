@@ -12,7 +12,7 @@
 
 Here is an example program operating on 3 bits. Bit 0 is the source bit (`x`), bit 1 is the target bit (`y`) and bit 2 is the temporary bit (`f`). Here the value of `x` is being moved to `y`.
 
-```sh
+```
 # x=?, y=0, f=0
 (>>*<<)        # set f if x is set
 >>(            # if f is set
@@ -25,7 +25,13 @@ Here is an example program operating on 3 bits. Bit 0 is the source bit (`x`), b
 we can run the above program on an example tape (`100`) with rbf cli:
 
 ```sh
-rbf -t 100 "(>>*<<)>>(<(>*<)*<*(>>*<<)>>)<(>*<)"  # outputs 010
+rbf run -t 100 "(>>*<<)>>(<(>*<)*<*(>>*<<)>>)<(>*<)"  # outputs 010
+```
+
+Since RBF is reversible, we can easily create a move left program:
+
+```sh
+rbf reverse "(>>*<<)>>(<(>*<)*<*(>>*<<)>>)<(>*<)"  # outputs (>*<)>(<<(>>*<<)*>*(>*<)>)<<(>>*<<)
 ```
 
 ## installation
