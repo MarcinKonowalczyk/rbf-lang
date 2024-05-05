@@ -56,3 +56,4 @@ _(as of yet uncategorised links to related topics. Will be sorted and expanded i
 - https://en.wikipedia.org/wiki/Toffoli_gate
 - https://arxiv.org/abs/1110.2574
 - https://www.sciencedirect.com/science/article/abs/pii/016727899090185R?via%3Dihub
+- http://weblog.raganwald.com/2004/10/beware-of-turing-tar-pit.html
