@@ -1,6 +1,9 @@
 # rbf-lang
 
-[![PyPI version](https://badge.fury.io/py/rbf-lang.svg)](https://pypi.org/project/rbf-lang/) [![publish](https://github.com/MarcinKonowalczyk/rbf-lang/actions/workflows/publish.yml/badge.svg)](https://github.com/MarcinKonowalczyk/rbf-lang/actions/workflows/publish.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI version](https://badge.fury.io/py/rbf-lang.svg)](https://pypi.org/project/rbf-lang/)
+[![publish](https://github.com/MarcinKonowalczyk/rbf-lang/actions/workflows/publish.yml/badge.svg)](https://github.com/MarcinKonowalczyk/rbf-lang/actions/workflows/publish.yml)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+![Python versions](https://img.shields.io/badge/python-3.9%20~%203.13-blue)
 
 [Reversible BitFuck](https://esolangs.org/wiki/Reversible_Bitfuck) (RBF) is a [reversible Turing tarpit](https://cstheory.stackexchange.com/questions/22128/reversible-turing-tarpits). It is based on a tape of bits and has 5 commands:
 
