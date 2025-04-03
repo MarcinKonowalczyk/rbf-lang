@@ -7,6 +7,7 @@ name = "rbf-lang"
 authors = [{ name = "Marcin Konowalczyk", email = "marcin.konow@lczyk.xyz" }]
 dynamic = ["version", "description"]
 readme = "README.md"
+requires-python = ">=3.9"
 
 [project.urls]
 home = "https://github.com/marcinkonowalczyk/rbf-lang"
@@ -32,6 +33,39 @@ exclude_lines = [
     "except ImportError:",
 ]
 
+[tool.mypy]
+ignore_missing_imports = true
+follow_imports = "normal"
+
+namespace_packages = true
+disallow_untyped_defs = true
+# disallow_any_unimported = true
+# disallow_any_generics = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+show_error_codes = true
+warn_unused_ignores = true
+warn_unused_configs = true
+explicit_package_bases = true
+# enable_error_code = "explicit-override"
+extra_checks = true
+local_partial_types = true
+
+files = [
+    "./rbf_lang/**/*.py",
+    "./tests/**/*.py",
+    #
+]
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = ["-s", "--tb=short", "--color=yes"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "ruff>=0.11.2",
+    #
+]

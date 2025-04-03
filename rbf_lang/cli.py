@@ -1,6 +1,6 @@
 import logging
 import argparse
-from .runner import run
+from . import run, Program, Tape
 
 
 def main() -> None:
@@ -63,7 +63,7 @@ def run_main(args: argparse.Namespace, logger: logging.Logger) -> None:
         logger.debug("Using --tape as an integer")
         tape = int(args.tape)
 
-    def callback(program, tape):
+    def callback(program: Program, tape: Tape) -> bool:
         logger.debug(
             f" {program.steps} {program.command.value} {program.pointer:02d} | {tape.pointer:02d} {tape}"
         )

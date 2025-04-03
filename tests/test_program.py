@@ -4,14 +4,14 @@ from rbf_lang.program import Program, ProgramPointerError, InvalidProgramError
 from rbf_lang.command import Command
 
 
-def test_run():
+def test_run() -> None:
     source = "*>" * 8
     program = Program(source)
 
     assert program == source
 
 
-def test_hashable():
+def test_hashable() -> None:
     source = "*>" * 8
     program = Program(source)
     hash_1 = hash(source)
@@ -20,7 +20,7 @@ def test_hashable():
     assert hash_1 == hash_2
 
 
-def test_equality():
+def test_equality() -> None:
     source = "*>" * 8
     program_1 = Program(source)
     program_2 = Program(source)
@@ -28,7 +28,7 @@ def test_equality():
     assert program_1 == program_2
 
 
-def test_move():
+def test_move() -> None:
     source = "*>" * 8
     program = Program(source)
 
@@ -63,7 +63,7 @@ def test_move():
     assert program.steps == 32
 
 
-def test_reset():
+def test_reset() -> None:
     source = "*>" * 8
     program = Program(source)
 
@@ -78,7 +78,7 @@ def test_reset():
     assert program.steps == 0
 
 
-def test_getitem():
+def test_getitem() -> None:
     source = "*>" * 8
     program = Program(source)
 
@@ -89,7 +89,7 @@ def test_getitem():
     assert program[0:3] == [Command("*"), Command(">"), Command("*")]
 
 
-def test_command_property():
+def test_command_property() -> None:
     source = "*>" * 8
     program = Program(source)
 
@@ -98,7 +98,7 @@ def test_command_property():
     assert program.command == Command(">")
 
 
-def test_loop_start():
+def test_loop_start() -> None:
     source = "(*)*"
     program = Program(source)
 
@@ -115,7 +115,7 @@ def test_loop_start():
     assert program.steps == 1
 
 
-def test_loop_start_overflow():
+def test_loop_start_overflow() -> None:
     source = "(*)"
     program = Program(source)
 
@@ -133,7 +133,7 @@ def test_loop_start_overflow():
     assert program.steps == 1
 
 
-def test_loop_start_only_on_bracket():
+def test_loop_start_only_on_bracket() -> None:
     source = "(*)"
     program = Program(source)
     program.move_right()
@@ -143,7 +143,7 @@ def test_loop_start_only_on_bracket():
         program.loop_start(False)
 
 
-def test_loop_start_nested_brackets():
+def test_loop_start_nested_brackets() -> None:
     source = "(*(*))*"
     program = Program(source)
 
@@ -153,7 +153,7 @@ def test_loop_start_nested_brackets():
     assert program.steps == 1
 
 
-def test_loop_end():
+def test_loop_end() -> None:
     source = "(*)*"
     program = Program(source)
     program.move_right(2)
@@ -172,7 +172,7 @@ def test_loop_end():
     assert program.steps == 3
 
 
-def test_loop_end_overflow():
+def test_loop_end_overflow() -> None:
     source = "(*)>"
     program = Program(source)
     program.move_right(2)
@@ -191,7 +191,7 @@ def test_loop_end_overflow():
     assert program.steps == 3
 
 
-def test_loop_end_only_on_bracket():
+def test_loop_end_only_on_bracket() -> None:
     source = "(*)"
     program = Program(source)
 
@@ -200,7 +200,7 @@ def test_loop_end_only_on_bracket():
         program.loop_end(False)
 
 
-def test_loop_end_nested_brackets():
+def test_loop_end_nested_brackets() -> None:
     source = "(*(*))*"
     program = Program(source)
     program.move_right(5)
@@ -210,13 +210,13 @@ def test_loop_end_nested_brackets():
     assert program.steps == 6
 
 
-def test_invalid_program():
+def test_invalid_program() -> None:
     source = "*)"
     with pytest.raises(InvalidProgramError):
         Program(source)
 
 
-def test_copy():
+def test_copy() -> None:
     source = "*>" * 8
     program = Program(source)
     program_2 = program.copy()

@@ -67,3 +67,6 @@ test-output.xml
 htmlcov
 .python-version
 dist
+
+.venv
+.tox

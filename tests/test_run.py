@@ -1,4 +1,4 @@
-from rbf_lang.runner import run
+from rbf_lang import run, Tape, Program
 
 
 def test_run_toggle() -> None:
@@ -27,7 +27,7 @@ def test_run_callback() -> None:
     source = "*>" * 8
     tape_size = 8
 
-    def callback(program, tape):
+    def callback(program: Program, tape: Tape) -> bool:
         return program.steps == 5
 
     program, tape = run(
