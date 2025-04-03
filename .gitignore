@@ -69,4 +69,4 @@ htmlcov
 dist
 
 .venv
-.python-version
+.tox
