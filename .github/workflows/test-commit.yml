@@ -2,7 +2,8 @@ name: test-commit
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
@@ -20,17 +21,19 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: install flit
-        run: pip install flit black mypy pytest
+      - name: Install flit and uv
+        run: |
+          pip install flit uv
+          uv sync
 
-      - name: build and publish
+      - name: Flit install
         run: flit install
 
       - name: Check with black
-        run: black --check --verbose .
+        run: uv run ruff format --check .
 
       - name: Check with mypy
-        run: mypy .
+        run: uv run mypy
 
       - name: Run tests
-        run: pytest
+        run: uv run pytest

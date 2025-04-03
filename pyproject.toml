@@ -7,6 +7,7 @@ name = "rbf-lang"
 authors = [{ name = "Marcin Konowalczyk", email = "marcin.konow@lczyk.xyz" }]
 dynamic = ["version", "description"]
 readme = "README.md"
+requires-python = ">=3.9"
 
 [project.urls]
 home = "https://github.com/marcinkonowalczyk/rbf-lang"
@@ -57,9 +58,18 @@ files = [
     #
 ]
 
+[tool.black]
+line-length = 120
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = ["-s", "--tb=short", "--color=yes"]
 
 [dependency-groups]
-dev = ["black>=25.1.0", "mypy>=1.15.0", "pytest>=8.3.5", "ruff>=0.11.2"]
+dev = [
+    "black>=25.1.0",
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "ruff>=0.11.2",
+    #
+]
