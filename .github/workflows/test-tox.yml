@@ -1,4 +1,4 @@
-name: test
+name: test-tox
 
 on:
   pull_request:
