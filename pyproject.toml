@@ -58,16 +58,12 @@ files = [
     #
 ]
 
-[tool.black]
-line-length = 120
-
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = ["-s", "--tb=short", "--color=yes"]
 
 [dependency-groups]
 dev = [
-    "black>=25.1.0",
     "mypy>=1.15.0",
     "pytest>=8.3.5",
     "ruff>=0.11.2",
